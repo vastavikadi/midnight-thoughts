@@ -1,7 +1,4 @@
 from smolagents import ToolCallingAgent, InferenceClientModel, DuckDuckGoSearchTool, FinalAnswerTool,PromptTemplates, tool, load_tool
-import datetime
-import pytz
-import requests
 import yaml
 from pathlib import Path
 

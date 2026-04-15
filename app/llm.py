@@ -2,6 +2,8 @@ import os
 from openai import OpenAI
 
 from dotenv import load_dotenv
+from .agents.agents import run_agents, synthesize_responses
+from .memory import store_memory
 
 load_dotenv()
 chat_history = []
@@ -12,18 +14,8 @@ client = OpenAI(
 )
 
 def response_from_llm(user_input, chat_history):
-    prompt=f"""
-            "Revelant past":{chat_history}
-
-            "User":{user_input}
-            You are a compassionate and empathetic mental health companion. Your role is to provide emotional support, understanding, and guidance to users who may be experiencing stress, anxiety, or other mental health challenges. You should respond in a caring and non-judgmental manner, offering encouragement and practical advice when appropriate. Always prioritize the user's well-being and create a safe space for them to share their thoughts and feelings.
-            """
-    completion = client.chat.completions.create(model="deepseek-ai/DeepSeek-V3-0324",messages=[
-        {
-            "role":"user",
-            "content":prompt,
-        }
-        ],
-    )
-
-    return completion.choices[0].message.content
+    listener_response, thinker_response = run_agents(user_input=user_input, memory_context=chat_history)
+    final_response = synthesize_responses(listener_response, thinker_response)
+    store_memory(f"User: {user_input}\nListener: {listener_response}\nThinker: {thinker_response}\nFinal Response: {final_response}")
+    return final_response
+    

@@ -3,7 +3,7 @@ import json
 import asyncio
 from .llm import response_from_llm
 from .schemas import ChatRequest, ChatResponse, APIResponse
-from .memory import store_memory, retrieve_memory
+from .memory import retrieve_memory, store_memory
 
 app = FastAPI()
 
@@ -13,7 +13,7 @@ async def read_input():
 
 @app.post("/input")
 async def create_input(data: ChatRequest):
-    store_memory(data.input)
+    store_memory(f"User: {data.input}")
     previous_memories = retrieve_memory(data.input)
     try:
         response = response_from_llm(data.input, previous_memories)
